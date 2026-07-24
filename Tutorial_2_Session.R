@@ -14,14 +14,14 @@ penguins_select <-  penguins |>
 #removing columns we dont want
 penguins_remove <- penguins |> 
   select(-bill_length_mm, -species, -year)
-
+#chosing a column
 penguins_filter_chinstrap <- penguins |> 
   filter(species =="Chinstrap")
 
 #chosing everythin but Chinstrap
 penguins_filter_chinstrap <- penguins |> 
   filter(species!="Chinstrap")
-#
+#chosing rows
 penguins_filter_chinstrap <- penguins |> 
   filter(species %in% c("Chinstrap","Adelie"))
 
