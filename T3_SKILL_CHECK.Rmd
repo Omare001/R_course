@@ -1,0 +1,188 @@
+---
+title: "SKILL_CHECK_3"
+author: "OMARE_MOKAYA"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1&2 Loading Packages
+```{r packages}
+
+library(ggplot2)
+library(patchwork)
+library(dplyr)
+library(tinytex)
+```
+
+## 3 Loading Data
+
+```{r data}
+gapminder <- read.csv("C:\\Users\\Omare Collins\\Downloads\\gapminder_data.csv")
+glimpse(gapminder)
+```
+
+## 4 Scatter plot  of lifeExp vs gdpPercap
+
+```{r scatter}
+ggplot(gapminder,aes(x = gdpPercap, y = lifeExp))+
+geom_point()
+```
+
+## 5 Colour by Continent
+```{r colour}
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, colour = continent)) +
+  geom_point()
+```
+
+## 6 Trasforming the Y axis
+```{r transform}
+ggplot(gapminder, aes(x = log10(gdpPercap), y = lifeExp, colour = continent)) +
+geom_point()
+```
+
+## 7: Facet by continent
+
+```{r facet}
+ggplot(gapminder, aes(x = log10(gdpPercap), y = lifeExp, colour = continent)) +
+  geom_point() +
+  facet_grid(~continent)
+```
+
+## 8: Theme as plot1
+
+```{r plot1}
+plot1 <- ggplot(gapminder, aes(x = log10(gdpPercap), y = lifeExp, colour = continent)) +
+  geom_point() +
+  facet_grid(~continent) +
+  theme_bw()
+plot1
+```
+
+## 9: Density plot of life expectancy by continent
+
+```{r density}
+ggplot(gapminder, aes(x = lifeExp, fill = continent)) +
+  geom_density(alpha = 0.5)
+```
+
+## 10: Life expectancy vs year, coloured by country, as plot2
+
+```{r plot2}
+plot2 <- ggplot(gapminder, aes(x = year, y = lifeExp, colour = country)) +
+  geom_line() +
+  theme(legend.position = "none")
+plot2
+```
+
+## 11: gapminder_2007 - mean gdpPercap by continent
+
+```{r}
+gapminder_2007 <- gapminder %>%
+  filter(year == 2007) %>%
+  group_by(continent) %>%
+  summarise(mean_gdpPercap = mean(gdpPercap))
+
+gapminder_2007
+# Oceania had the highest mean GDP per capita in 2007 (~$29,810),
+# followed by Europe (~$25,054). Africa had the lowest (~$3,089).
+```
+
+## 12: Point plot of continent vs mean GDP per capita
+
+```{r plot of ct vs gdp}
+ggplot(gapminder_2007, aes(x = continent, y = mean_gdpPercap, colour = continent)) +
+  geom_point()
+```
+
+## 13: Bar plot with labels and theme
+
+```{r bar}
+ggplot(gapminder_2007, aes(x = continent, y = mean_gdpPercap, colour = continent)) +
+  geom_col() +
+  labs(x = "Continent", y = "Mean GDP per Capita (2007)",
+       title = "Mean GDP per Capita by Continent (2007)") +
+  theme_minimal()
+```
+
+## 14: gapminder_summary - mean gdpPercap and lifeExp by continent/year
+
+```{r summary}
+gapminder_summary <- gapminder %>%
+  group_by(continent, year) %>%
+  summarise(mean_gdpPercap = mean(gdpPercap),
+            mean_lifeExp = mean(lifeExp),
+            .groups = "drop")
+
+gapminder_summary
+```
+
+## 15: Line + point plot of year vs mean life expectancy
+
+```{r plot3}
+plot3 <- ggplot(gapminder_summary, aes(x = year, y = mean_lifeExp, colour = continent)) +
+  geom_line() +
+  geom_point()
+plot3
+```
+
+## 16: kenya_gapminder
+
+```{r kenya}
+kenya_gapminder <- gapminder %>%
+  filter(country == "Kenya")
+```
+
+## 17: Year vs GDP per capita for Kenya
+
+```{r year v gdp}
+ggplot(kenya_gapminder, aes(x = year, y = gdpPercap)) +
+  geom_line(colour = "blue") +
+  labs(x = "Year", y = "GDP per Capita",
+       title = "Kenya: GDP per Capita Over Time") +
+  theme_bw()
+```
+
+## 18: gapminder_decline
+
+```{r decline}
+gapminder_decline <- gapminder %>%
+  filter(year %in% c(1997, 2002, 2007), diff_lifeExp < 0)
+```
+
+## 19: Bar plot of decline, faceted by year
+
+```{r bar plot decline}
+ggplot(gapminder_decline, aes(x = country, y = diff_lifeExp)) +
+  geom_col() +
+  facet_grid(~year, scales = "free_x") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+#The countries with the greatest reduction in life expectancy were:
+# 1997 - Zimbabwe (-13.57 years)
+# 2002 - Lesotho (-10.97 years)
+# 2007 - Swaziland (-4.26 years)
+```
+
+## 20: Colour by country, remove legend, label axes, add theme, saved as plot4
+
+```{r colour by country}
+plot4 <- ggplot(gapminder_decline, aes(x = country, y = diff_lifeExp, fill = country)) +
+  geom_col() +
+  facet_grid(~year, scales = "free_x") +
+  labs(x = "Country", y = "Change in Life Expectancy",
+       title = "Countries with Declining Life Expectancy (1997, 2002, 2007)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "none")
+plot4
+```
+
+## 21: Combining plot1-4 with patchwork (2 on top, 2 on bottom)
+
+```{r, fig.width=10, fig.height=8}
+(plot1 | plot2) / (plot3 | plot4)
+```
