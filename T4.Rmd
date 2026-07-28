@@ -1,0 +1,65 @@
+---
+title: "Tutorial_4_Session"
+author: "OMARE_MOKAYA"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(janitor)
+library(dplyr)
+library(nycflights13)
+library(ggplot2)
+library(tidyr)
+
+```
+
+```{r data load}
+penguins <- read.csv("data/penguins.csv")
+covid_observations <- read.csv("data/covid_observations.csv")
+```
+```{r}
+summary(penguins)
+```
+
+```{r}
+filtered_penguins <- penguins |> 
+  filter(!is.na(sex))
+```
+```{r}
+filtered_bill_length <- penguins |> 
+  filter(!is.na(bill_length_mm))
+```
+```{r other approaches to remove NAs}
+library(tidyr)
+#drop all rows with NA value in any column
+drop_all <- penguins |> drop_na()
+#drop all rows with NA in  e bill_depth_mm
+drop_bill_length <- penguins |> drop_na(bill_length_mm)
+#can use replace_na which only functions on NAs
+penguins_replace <- penguins |> replace_na(list(bill_depth_mm = 0))
+
+```
+```{r}
+head(covid_observations)
+```
+```{r}
+covid_observations|>
+  separate(col = date, into = c("year", "month", "day"), sep =
+"-",remove = FALSE)
+```
+
+```{r}
+ covid_observations |> 
+  unite(name,personID, col = "name_code",sep = "_",remove = FALSE)
+```
+
+## paste0()/paste()
+
+```{r}
+covid_observations |>
+  mutate(new_id=paste("Patient",personID,sep ="_",remove = FALSE ))
+```
+
