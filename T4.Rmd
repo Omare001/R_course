@@ -34,10 +34,13 @@ filtered_bill_length <- penguins |>
 ```
 ```{r other approaches to remove NAs}
 library(tidyr)
+
 #drop all rows with NA value in any column
 drop_all <- penguins |> drop_na()
+
 #drop all rows with NA in  e bill_depth_mm
 drop_bill_length <- penguins |> drop_na(bill_length_mm)
+
 #can use replace_na which only functions on NAs
 penguins_replace <- penguins |> replace_na(list(bill_depth_mm = 0))
 
@@ -49,6 +52,7 @@ head(covid_observations)
 covid_observations|>
   separate(col = date, into = c("year", "month", "day"), sep =
 "-",remove = FALSE)
+
 ```
 
 ```{r}
